@@ -1,0 +1,23 @@
+<!--  THIS SHOWS UP AFTER DATE SPECIFIED IN CODE BELOW  -->
+<p id="show-after-date" style="display: none">
+  <strong>IT'S JUNE!</strong>
+    <br />
+  The big event is happening this month!
+</p>
+<!--  end SHOWS UP AFTER DATE  -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var contentChangeDate = new Date("May 31, 2023 23:59:30");
+
+    var updatedContent = document.querySelector("#show-after-date");
+    var presentDate = new Date();
+
+    //if (contentChangeDate < presentDate) {  // OPTIONALLY, ADD A CLASS TO THE BODY TO CHANGE STYLING OF ENTIRE PAGE
+    //  document.querySelector("body").classList.add("june-styles");
+    //}
+
+    updatedContent.style.display =
+      contentChangeDate < presentDate ? "block" : "none";
+  });
+</script>
