@@ -1,3 +1,12 @@
+<!--  
+     INSTRUCTIONS:
+
+     - Place this code in the "Edit Ticket Information" section
+     of an event admin 
+     - In the  <script> section of the code, add the desired date/time 
+      to the "contentChangeDate" variable
+    -->
+
 <!--  THIS SHOWS UP AFTER DATE SPECIFIED IN CODE BELOW  -->
 <p id="show-after-date" style="display: none">
   <strong>IT'S JUNE!</strong>
@@ -13,7 +22,8 @@
     var updatedContent = document.querySelector("#show-after-date");
     var presentDate = new Date();
 
-    //if (contentChangeDate < presentDate) {  // OPTIONALLY, ADD A CLASS TO THE BODY TO CHANGE STYLING OF ENTIRE PAGE
+    // OPTIONALLY, ADD A CLASS TO THE BODY TO CHANGE STYLING OF ENTIRE PAGE
+    //if (contentChangeDate < presentDate) {  
     //  document.querySelector("body").classList.add("june-styles");
     //}
 

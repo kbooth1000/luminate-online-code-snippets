@@ -1,0 +1,20 @@
+<script>
+  // SHOW NUMBER OF TICKETS STILL AVAILABLE NEXT TO TICKET DESCRIPTION
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    var ticketsAvailableBoxes = document.querySelectorAll('table#lo-ticket_class_list_user tr td:nth-of-type(3)');
+    var ticketTitles = document.querySelectorAll('a[id^="ticket-class-details-link"]');
+    if (ticketsAvailableBoxes[0]) {
+      for (var i = 0; i < ticketsAvailableBoxes.length; i++) {
+
+        var ticketsAvailableStr = (ticketsAvailableBoxes[i].textContent.trim().toLowerCase() !== 'sold out' && ticketsAvailableBoxes[i].textContent.trim().toLowerCase() !== 'no limit' && !document.querySelector('[id^="not_avail' + i + '"]')) ? ticketsAvailableBoxes[i].textContent.trim() : 'none';
+
+        if (ticketTitles[i]) {
+          ticketTitles[i].textContent = ticketsAvailableStr === 'none' ? ticketTitles[i].textContent : ticketTitles[i].textContent + ' (' + ticketsAvailableStr + ' available)';
+        }
+      }
+    }
+  })
+
+</script>
