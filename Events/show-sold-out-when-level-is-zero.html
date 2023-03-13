@@ -1,0 +1,24 @@
+<!-- REPLACES THE DEFAULT "N/A" ON AN EVENT 
+     LEVEL THAT IS SOLD OUT WITH THE WORDS 
+    "SOLD OUT"
+
+     INSTRUCTIONS:
+
+     - Place this code in the "Edit Ticket Information" section
+     of an event admin 
+    -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var soldOuts = document.querySelectorAll('[id^="not_avail"]');
+    if (soldOuts.length > 0) {
+      for (var i = 0; i < soldOuts.length; i++) {
+        soldOutSpan = document.createElement('span');
+        soldOutSpan.style.fontSize = '0.85em';
+        soldOutSpan.textContent = 'SOLD OUT';
+        soldOuts[i].textContent = '';
+        soldOuts[i].appendChild(soldOutSpan);
+      }
+    }
+  })
+</script>
