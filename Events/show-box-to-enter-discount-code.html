@@ -1,7 +1,3 @@
-<h1>We hope you can join us for the 2023 Fairy Tale Tea!</h1>
-
-
-
 <!-- ADDS A DISCOUNT CODE INPUT FIELD TO THE EVENT DETAILS LANDING PAGE.
      WHEN A USER INPUTS ON OF THE DESIGNATED DISCOUNT CODES, A "SUBMIT"
      BUTTON APPEARS THAT LEADS TO THE MAIN EVENT REGISTRATION PAGE WITH
@@ -68,7 +64,6 @@
   <p>Enter discount code:</p>
   <input type="text" placeholder="Enter discount code" id="discount-code-box" /><a href="#"
     class="discount-btn">Submit</a>
-  <!-- <span class="next-arrow"> > </span> -->
 
 </aside>
 
@@ -90,15 +85,9 @@
 
     discountCodeBox.addEventListener('keyup', function (e) {
 
-      // var discountCode = ucDisCodes.includes(e.target.value.toUpperCase()) ? e.target.value.toUpperCase() : null
       var discountCode
 
-      // if(discountCodes.some(cd =>
-      //   cd.toUpperCase() === e.target.value.toUpperCase()) {
-      //     discountCode = 
-      //   }
-      // )
-
+      // make discount codes case-insensitive
       discountCodes.forEach(cd => {
         if (cd.toUpperCase() === e.target.value.toUpperCase()) {
           discountCode = cd
