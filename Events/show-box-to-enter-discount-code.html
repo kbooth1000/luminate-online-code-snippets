@@ -1,0 +1,124 @@
+<h1>We hope you can join us for the 2023 Fairy Tale Tea!</h1>
+
+
+
+<!-- ADDS A DISCOUNT CODE INPUT FIELD TO THE EVENT DETAILS LANDING PAGE.
+     WHEN A USER INPUTS ON OF THE DESIGNATED DISCOUNT CODES, A "SUBMIT"
+     BUTTON APPEARS THAT LEADS TO THE MAIN EVENT REGISTRATION PAGE WITH
+     THE DISCOUNT CODE ALREADY ADDED TO THE URL
+
+     INSTRUCTIONS:
+
+     - Place this code in the "Configure Additional Information" section
+     of an event admin 
+     - In the  <script> section of the code, add the desired discount codes
+      to the "discountCodes" variable
+    -->
+
+<style>
+  aside.discount-container {
+    width: 25rem;
+    margin: auto;
+  }
+
+  #discount-code-box {
+    width: 15rem !important;
+    height: 2rem;
+    font-size: 20px;
+    display: inline-block;
+    margin: 0 1rem;
+  }
+
+  #buytickets {
+    display: none;
+  }
+
+  .discount-btn,
+  .next-arrow {
+    background-color: #00A94F;
+    color: #fff;
+    border-radius: 3rem;
+    padding: 11px;
+    width: 7rem;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+    text-decoration: none;
+    /* margin: auto; */
+    display: inline-block;
+    text-align: center;
+  }
+
+  .next-arrow {
+    display: inline-block;
+    padding: 5px;
+    width: 2rem;
+  }
+
+  .discount-btn {
+    display: none;
+  }
+
+  .enabled .discount-btn {
+    display: inline-block;
+  }
+</style>
+
+<aside class="discount-container">
+  <p>Enter discount code:</p>
+  <input type="text" placeholder="Enter discount code" id="discount-code-box" /><a href="#"
+    class="discount-btn">Submit</a>
+  <!-- <span class="next-arrow"> > </span> -->
+
+</aside>
+
+<script>
+
+  // #### SET THIS TO THE DESIRED DISCOUNT CODE(S)
+  var discountCodes = ["secretTicket23", "tennis23"];
+
+  var ucDisCodes = discountCodes.map(cd => cd.toUpperCase());
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+  var baseURL = "[[S6]]".split('/Calendar')[0];
+
+    var discountCtr = document.querySelector('.discount-container')
+    var discountBtn = document.querySelector('.discount-btn')
+    var discountCodeBox = document.querySelector('#discount-code-box')
+
+
+    discountCodeBox.addEventListener('keyup', function (e) {
+
+      // var discountCode = ucDisCodes.includes(e.target.value.toUpperCase()) ? e.target.value.toUpperCase() : null
+      var discountCode
+
+      // if(discountCodes.some(cd =>
+      //   cd.toUpperCase() === e.target.value.toUpperCase()) {
+      //     discountCode = 
+      //   }
+      // )
+
+      discountCodes.forEach(cd => {
+        if (cd.toUpperCase() === e.target.value.toUpperCase()) {
+          discountCode = cd
+        }
+      })
+
+
+      console.log('discountCode:', discountCode)
+      discountCtr.classList.remove('enabled')
+
+      if (discountCode) {
+
+        if (e.target.value.toUpperCase() === discountCode.toUpperCase()) {
+
+          e.preventDefault()
+          discountBtn.setAttribute('href', baseURL + '/Ticketing?view=Tickets&id=[[S334:id]]&s_promoCode=' + discountCode)
+          discountCtr.classList.add('enabled')
+        }
+      }
+
+    })
+  })
+</script>
