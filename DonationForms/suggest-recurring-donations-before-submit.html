@@ -1,0 +1,233 @@
+  <!--  ADD TO AN HTML DATA ELEMENT IN A DONATION FORM TO
+        IMPLEMENT A POP-UP MODAL THAT WILL SUGGEST SETTING UP A
+        MONTHLY DONATION TO A DONOR THAT HAS CHOSEN A ONE-TIME
+        DONATION  -->
+  
+
+
+<style>
+  .modal-obscurer {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    align-items: center;
+    justify-content: center;
+    background: rgba(1, 1, 1, 0.8);
+    position: fixed;
+    z-index: -9999;
+    top: 0;
+    left: 0;
+  }
+
+  aside.modal-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    width: 80%;
+    background: #fff;
+    padding: 2rem;
+    font-size: 1.4rem;
+    line-height: 3rem 2rem;
+    color: #333;
+    border: #3e3 5px solid;
+  }
+
+  .suggested-donation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .suggested-donation-buttons p {
+    width: 6rem;
+    padding: 6px;
+    border: #555 1px solid;
+    border-radius: 3px;
+    background-color: #aaa;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+  }
+
+  .suggested-donation-buttons p:hover {
+    background-color: #888;
+  }
+</style>
+
+<script>
+
+  let monthlyDonationShouldntBeBelow = 5;
+
+  // #### CREATE MODAL ####
+  let processForm = document.querySelector('form#ProcessForm');
+  document.addEventListener("DOMContentLoaded", function () {
+    let recurringDonationModal = document.createElement("div");
+    recurringDonationModal.classList.add("modal-obscurer");
+    processForm.append(recurringDonationModal);
+
+    let modalMessage = document.createElement("aside");
+    modalMessage.classList.add("modal-message");
+    recurringDonationModal.append(modalMessage);
+  });
+
+  let getDonationValue = function (e) {
+    let donationLevelLabelContainer = document.querySelector(
+      ".active .donation-level-label-container"
+    );
+    let giftValue = document.querySelector(
+      ".donation-level-container .donation-level-user-entered input"
+    ).value;
+    let giftLevel = donationLevelLabelContainer
+      ? parseInt(
+          donationLevelLabelContainer.textContent.replace(/[^0-9\. \n]/g, "")
+        )
+      : 0;
+    if (
+      giftValue > 0 &&
+      ((e &&
+        e.target.parentElement.parentElement.querySelector(
+          ".donation-level-user-entered"
+        )) ||
+        e.target.id === "transaction_fee_radio")
+    ) {
+      giftLevel = giftValue;
+    }
+
+    if (giftLevel) {
+      return giftLevel;
+    }
+
+    return 0;
+  };
+
+  document.addEventListener("DOMContentLoaded", getDonationValue);
+
+  let triggerEvents = ["keyup", "click", "change", "blur", "focusout"];
+
+  let donationLevelInputs = document.querySelectorAll(
+    ".donation-level-label-input-container input"
+  );
+  let userEnteredInput = document.querySelector(
+    ".donation-level-user-entered input"
+  );
+
+  triggerEvents.forEach((evt) => {
+    document
+      .querySelector("#transaction_fee_radio")
+      .addEventListener(evt, getDonationValue);
+    userEnteredInput.addEventListener(evt, getDonationValue);
+    donationLevelInputs.forEach((inpt) => {
+      inpt.addEventListener(evt, getDonationValue);
+    });
+  });
+
+  document
+    .querySelector("button#pstep_finish")
+    .addEventListener("mouseover", function () {
+      let recurringDonationModal = document.querySelector(".modal-obscurer");
+
+      // ### REQUIRED FIELDS
+      let fName = document.querySelector("#billing_first_namename"),
+        lName = document.querySelector("#billing_last_namename"),
+        streetAddr = document.querySelector("#billing_addr_street1name"),
+        city = document.querySelector("#billing_addr_cityname"),
+        zip = document.querySelector("#billing_addr_zipname"),
+        email = document.querySelector("#donor_email_addressname");
+
+      requiredFields = [fName, lName, streetAddr, city, zip, email];
+
+      let requiredFieldsFilled = true;
+
+      requiredFields.forEach((field) => {
+        if (field.value === "") {
+          requiredFieldsFilled = false;
+        }
+      });
+
+      // ### IS DONATION HIGH ENOUGH TO MAKE RECURRING?
+      let donationIsHighEnough = getDonationValue() / 12 > monthlyDonationShouldntBeBelow ? true : false;
+
+      const monthlyCheckboxCheckbox = document.querySelector(
+        "input#level_standardauto_repeatname");
+
+      let oneTimeDonationButtonIsChosen = ([
+        ...document.querySelector(".bc-content-container > div").classList,
+      ].includes("one-time-donation-chosen") || (monthlyCheckboxCheckbox && !monthlyCheckboxCheckbox.checked)
+      )
+
+      // ### CHECK IF REQS MET FOR OPENING MODAL ###
+      if (
+        donationIsHighEnough &&
+        requiredFieldsFilled &&
+        oneTimeDonationButtonIsChosen
+      ) {
+        recurringDonationModal.style.zIndex = "9999"; // ### OPEN MODAL ###
+      } else {
+        console.log(
+          "reqs not met",
+          { donationIsHighEnough },
+          { requiredFieldsFilled },
+          { oneTimeDonationButtonIsChosen }
+        );
+      }
+
+      // #### ADD TEXT AND DONATE BUTTON TO MODAL ####
+      let suggestedMonthlyDonation = Math.floor(
+        parseInt(getDonationValue() / 12)
+      );
+
+      let modalMessage = document.querySelector(".modal-message");
+
+      modalMessage.innerHTML =
+        "<p>WAIT, instead of a one-time gift of $" +
+        getDonationValue() +
+        ", would you like to start a recurring donation of $" +
+        suggestedMonthlyDonation +
+        " each month?</p>" +
+        '<div class="suggested-donation-buttons"><p class="yes-button" onclick="updateDonorCoverAmount(' +
+        suggestedMonthlyDonation +
+        ')">Yes</p><p class="no-button">No thanks, I\'ll stick with the one-time donation</p></div>';
+
+      let yesButton = document.querySelector(".yes-button");
+      let noButton = document.querySelector(".no-button");
+
+      let yesButtonClicked = () => {
+        let userDonationInput = document.querySelector(
+          ".donation-level-user-entered input"
+        );
+        userDonationInput.value = suggestedMonthlyDonation;
+
+        let monthlyCheckbox = document.querySelector(
+            "#level_standardauto_repeatname"
+          ),
+          oneTimeButton = document.querySelector(".one-time-checkbox"); //THIS SHOULD BE CHANGED TO WHATEVER SELECTOR CORRESPONDS TO THE HTML ELEMENT USED TO CHOOSE ONE-TIME OR RECURRING DONATIONS
+
+        monthlyCheckbox.checked = true;
+        oneTimeButton.classList.remove("chosen");
+
+        document
+          .querySelector(".donation-level-user-entered label")
+          .classList.add("active");
+        document
+          .querySelector(".donation-level-user-entered input")
+          .classList.add("filled");
+
+        modalMessage.innerHTML =
+          "<p>Thank you! Your recurring donation of $" +
+            suggestedMonthlyDonation +
+          "/month will help Children\'s for months to come!</p>";
+
+        let submitButtonBox = document.querySelector('.button-container');
+        modalMessage.append(submitButtonBox);
+
+        // recurringDonationModal.style.zIndex = "-9999";
+      };
+
+      yesButton.addEventListener("click", yesButtonClicked);
+      noButton.addEventListener("click", function () {
+        recurringDonationModal.style.zIndex = "-9999";
+      });
+    });
+</script>
