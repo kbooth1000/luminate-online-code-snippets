@@ -1,0 +1,14 @@
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+
+    var ticketDeets = document.querySelectorAll('div[id^="ticket-class-details-"] p');
+
+    for (var i = 0; i < ticketDeets.length; i++) {
+
+      var ticketDeetsStr = ticketDeets[i].textContent;
+      var newDeetsStr = ticketDeetsStr.replace(' tickets cost', ': This sponsorship package costs');
+      ticketDeets[i].textContent = newDeetsStr;
+    }
+
+  })
+</script>
