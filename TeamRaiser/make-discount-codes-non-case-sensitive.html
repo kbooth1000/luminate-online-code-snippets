@@ -1,0 +1,15 @@
+<!--  
+ADD THIS TO TEAMRAISER TO MAKE DISCOUNT CODES NON-CASE-SENSITIVE
+can be added in the pagewrapper or on the teamraiser's "Participation Options"
+  -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var discountCodeBox = document.querySelector('input#discount_code');
+    if (discountCodeBox) {
+      discountCodeBox.addEventListener('blur', function () {
+        discountCodeBox.value = discountCodeBox.value.toUpperCase();
+      })
+    }
+  });
+</script>
