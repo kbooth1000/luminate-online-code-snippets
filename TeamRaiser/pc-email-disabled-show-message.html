@@ -1,0 +1,209 @@
+<!-- IF PARTICIPANT DOESN'T MEET REQUIREMENTS TO SEND EMAILS FROM PARTICIPANT CENTER, 
+   SHOWS AN ALERT WHEN PARTICIPANT OPENS PC, LETTING THEM KNOW THAT EMAIL FEATURES ARE  
+   DIABLED. ALSO DISABLES EMAIL-FEATURE LINKS. FIRST TIME PARTICIPANT LOGS IN, SHOWS LARGE
+   MESSAGE, SUBSEQUENT VISITS IT SHOWS SMALL MESSAGE. 
+   (heavily referenced this community post: https://community.blackbaud.com/forums/viewtopic/12/63344#:~:text=Our%20team%20here%20at%20Yeeboo)
+  
+   PUT THIS CODE IN THE "home page" PAGE OF YOUR TEAMRAISER (UNDER 'Customize Pages' STEP) -->
+
+
+<style>
+  #disabled-email-message {
+    background-color: rgb(200, 200, 100, 0.1);
+    padding: 0.5rem 0.5rem 0.5rem 2rem;
+    margin: 2rem 4rem 4rem;
+    border-bottom: 8px solid rgb(200, 200, 100, 0.25);
+    display: none;
+  }
+
+
+  .email-functions-disabled #disabled-email-message {
+    display: block;
+  }
+
+  .email-functions-disabled.show-full-email-message #disabled-email-message {
+    background-color: rgba(255, 155, 50, 0.2);
+    padding: 1rem 2rem 2rem;
+  }
+
+
+
+
+  .disabled-email-message-details {
+    height: 2rem;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    scroll-snap-type: y mandatory;
+    overscroll-behavior-y: contain;
+  }
+
+  .disabled-email-message-details.expanded {
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    overscroll-behavior-y: contain;
+    height: 14rem;
+  }
+
+  .disabled-email-message-details:before {
+    content: 'Email features unavailable';
+    display: block;
+  }
+
+  div#disabled-email-message>*:not(.disabled-email-message-details) {
+    display: none;
+  }
+
+  .show-full-email-message div#disabled-email-message>*:not(.disabled-email-message-details),
+  div#disabled-email-message:has(.expanded)>*:not(.disabled-email-message-details) {
+    display: block;
+  }
+
+  .show-full-email-message .disabled-email-message-details:before {
+    content: '';
+  }
+
+  .more-info {
+    text-align: right;
+  }
+
+  .show-full-email-message .more-info {
+    text-align: left;
+  }
+
+  .info-slider {
+    position: absolute;
+    transform: translateY(calc(-100% + 1rem));
+    transition: 0.5s;
+  }
+
+  .show-full-email-message .info-slider {
+    transform: translateY(calc(-100% + 3rem));
+  }
+
+  .expanded .info-slider {
+    /* top: 2.5rem; */
+    transform: translateY(2rem);
+  }
+
+  .email-functions-disabled li.ng-scope.top-nav-item:nth-child(2) {
+    display: none;
+  }
+
+  .email-functions-disabled li.list-group-item:nth-child(2),
+  .email-functions-disabled li.list-group-item:nth-child(3),
+  .email-functions-disabled li.list-group-item:nth-child(4) {
+    background: #ddd;
+    color: #999;
+    pointer-events: none;
+  }
+
+
+  @media (max-width:898px) {
+    #disabled-email-message {
+      margin: 2rem 2rem 4rem;
+    }
+
+    #disabled-email-message:has(.disabled-email-message-details.expanded) {
+      padding: 1.5rem 3rem 1.5rem 2rem;
+      margin: 2rem;
+      height: 45rem;
+      overflow: auto;
+      border-bottom: 1rem rgba(255, 155, 50, 0.2) solid;
+    }
+
+    .disabled-email-message-details.expanded {
+      height: 100%;
+    }
+  }
+
+  /* ## */
+</style>
+
+<div id="disabled-email-message">
+  <h2>Important Message</h2>
+  <p><strong>NOTE: To combat the use of this system to send fraudulent emails, we now require participants to have made
+      a self-donation of at least $5 in order to send emails through their teamraiser. If you have not made a
+      self-donation, you can still participate by sending emails through your own personal email service.</strong></p>
+  <div class="disabled-email-message-details">
+    <div class="info-slider">
+      <p>
+        A participant must meet one of these criteria to use Participant Center email features:
+      </p>
+      <ul>
+        <li>Participant has transacted $5 or more to the organization at any point.</li>
+        <li>Participant has received confirmed donations of $5 or more from other donors in the current event.</li>
+        <li>Participant record is at least 365 old.</li>
+      </ul>
+      <p class="more-info">Click for more info...</p>
+    </div>
+  </div>
+</div>
+
+<p>Welcome to your Participant Center! This is your area to check your donation status, view all your totals and
+  watch your growth to meet your goal! You can also send messages to family and friends to ask for their help to reach
+  your goals and thank those who have supported your efforts.</p>
+
+<script>
+
+  const body = document.querySelector('body');
+  // const disabledEmailMessage = document.querySelector('#disabled-email-message');
+  const disabledEmailMessageDetails = document.querySelector('.disabled-email-message-details');
+  const moreInfo = document.querySelector('.more-info');
+  const infoSlider = document.querySelector('.info-slider');
+
+  disabledEmailMessageDetails.addEventListener('click', e => {
+    disabledEmailMessageDetails.scrollTo(0, 0);
+    disabledEmailMessageDetails.classList.toggle('expanded');
+    moreInfo.textContent = disabledEmailMessageDetails.classList.contains('expanded') ? '...less' : 'click for more info...';
+  })
+
+  const nowDate = new Date('[[S9:pattern:MMM d, yyyy]]');
+  const nowDateMS = nowDate.getTime();
+  const createDate = '[[S1:creation_date]]';
+  const formattedCreateDate = new Date(createDate.replace(/-/g, ' '));
+  const createDateMS = formattedCreateDate.getTime();
+  const daysOld = new Date(nowDate.getTime() - formattedCreateDate.getTime()) / 86400000;
+
+  const setCookie = (cname, cvalue, exdays) => {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+
+  const getCookie = (cname) => {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
+  const disableEmail = () => {
+    body.classList.add('email-functions-disabled');
+    if (getCookie('choa_email_msg_shown') == '') {
+      body.classList.add('show-full-email-message')
+      setCookie('choa_email_msg_shown', 'true', 0.0012); //1.5 minutes
+    }
+  }
+  const enableEmail = () => {
+    body.classList.remove('email-functions-disabled');
+  }
+
+  if (daysOld < 365) {
+    [[?xTRUEx::x[[E48:[[S334: fr_id]]-x[[S1:cons_id]]x:if-dollars-lt:5]]x::
+    disableEmail();
+      ::
+    enableEmail();
+      ]]
+  }
+
+</script>
