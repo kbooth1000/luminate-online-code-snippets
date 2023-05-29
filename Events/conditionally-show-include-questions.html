@@ -1,0 +1,303 @@
+<!-- reus_conditional_event_questions -->
+
+<!-- INSTRUCTIONS:
+PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT, 
+    (changing the ID numbers, etc. as needed):
+    the variable conditionallyShow will be an array of objects, each object containing
+    properties: triggerQuestion, showVals, hideVals, conditionalQuestions, showInitially
+      
+        <script>
+    var conditionallyShow = [
+        {
+            triggerQuestion: [ the id number of the question that the
+                               user will choose that will
+                               make the questions visible or hidden ],
+            showVals:  [ array of values for the trigger question that 
+                        will make the questions visible, ie. ['Yes'] ],
+            hideVals:  [ array of values for the trigger question that 
+                        will make the questions hidden, ie. ['No'] ],
+
+            showThese: [ an array of all the id numbers (as strings)
+                                    of the questions to be conditionally
+                                    hidden/shown, ie [ '11065', '11066','11067' ] ]
+
+            showAtStart: [optional: says whether or not the conditionalQuestions should
+                            be shown or hidden from the start, true or false (default is false)]
+        },
+        {
+            triggerQuestion: '11064',
+            showVals: 'No',
+            hideVals: 'Yes',
+            conditionalQuestions: ['11071']
+        }
+    ]
+
+
+
+</script> 
+
+
+    PUT THIS REUSABLE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT
+    (S51:reus_conditional_event_questions)
+    
+
+
+##### -->
+
+
+<!--    -->
+
+<style>
+    /* STYLES FOR ADDITIONAL QUESTIONS */
+
+    .show-question {
+        display: block;
+        margin-left: 2rem;
+    }
+
+    .hide-question {
+        display: none !important;
+    }
+</style>
+
+
+<script>  /* CODE TO HIDE/SHOW COMPANY QUESTIONS */
+
+    let allConditionals = [];
+    let allTriggerQuestionIDs = [];
+
+    const showConditionals = function showConditionals(triggerQuestionID, showQuestionIDs, hideVals, showVals, showInitially, index, firstTriggerQ, showAtStart, questionsData) {
+
+        const selector = '[name$="' + triggerQuestionID + '"]';
+        let currentTriggerOptions = [];
+        allTriggerQuestionIDs.push(triggerQuestionID);
+
+
+
+        const allRegTriggerOptions = [...document.querySelectorAll(selector)].map(sel => {
+            sel.classList.add('trigger-option');
+            currentTriggerOptions.push(sel);
+            return sel;
+        });
+        const allDropdownTriggerOptions = [...document.querySelectorAll('option')].map(sel => {
+            sel.classList.add('trigger-option');
+            currentTriggerOptions.push(sel);
+            return sel;
+        })
+
+
+
+        // array of dom element options in "showThese"s
+        const showTriggerOptions = showVals.map(val => {
+            const showValRadio = document.querySelector(selector + '[value="' + val + '"]');
+            if (showValRadio) {
+                showValRadio.classList.add('show-trigger-option');
+                return showValRadio;
+            }
+            const showValDropdown = document.querySelector('option[value="' + val + '"]');
+            if (showValDropdown) {
+                showValDropdown.classList.add('show-trigger-option');
+                return showValDropdown;
+            }
+        })
+
+
+        const hideTriggerOptions = hideVals.map(val => {
+            const hideValRadio = document.querySelector(selector + '[value="' + val + '"]');
+            if (hideValRadio) {
+                hideValRadio.classList.add('hide-trigger-option');
+                return hideValRadio;
+            }
+            const hideValDropdown = document.querySelector('option[value="' + val + '"]');
+            if (hideValDropdown) {
+                hideValDropdown.classList.add('hide-trigger-option');
+                return hideValDropdown;
+            }
+        })
+
+
+
+
+        // create array of DOM elements from showQuestionIDs, allConditionals
+        if (showQuestionIDs.length > 0 && triggerQuestionID) {
+
+            const allShowQuestionIDs = [...showQuestionIDs, ...[triggerQuestionID]];
+
+            allShowQuestionIDs.forEach(questionID => {
+
+                // pushes regular questions to array
+                if (document.querySelector(
+                    '.survey-question-container:has([name$="' + questionID + '"])'
+                )) {
+
+                    allConditionals.push(document.querySelector(
+                        '.survey-question-container:has([name$="' + questionID + '"])'
+                    ))
+                }
+
+                // pushes "caption" questions to array
+                const captionQs = [...document.querySelectorAll('.form-content.survey-caption-container')];
+                captionQs.forEach(cq => {
+                    if (cq.textContent.includes(`##${questionID}##`)) {
+
+                        allConditionals.push(cq);
+                    }
+                });
+            })
+        }
+
+
+
+        //#######   #######   #######   #######   #######   #######   #######   #######          getQuestionsToShow
+        const getQuestionsToShow = (option, currentShowQIDs, currentTrigger, showOrHide, isOnChange) => {
+
+            let triggerAndShowQsInPath = questionsData.map(obj => {
+                if (obj.showThese.includes(currentTrigger)) {
+                    return [obj.triggerQuestion, obj.showThese].flat();
+                }
+            }).filter(x => x !== undefined)
+
+            let allQsToShow = [];
+            if (isOnChange && showOrHide === 'show') {      //                 allQsToShow = [
+                    ...triggerAndShowQsInPath, currentTrigger, ...currentShowQIDs
+                ].flat();
+            } else if (!isOnChange && showOrHide === 'show') {                allQsToShow = [
+                    // ...triggerAndShowQsInPath, currentTrigger
+                    questionsData.map(q => q.showAtStart && q.triggerQuestion)
+                ].flat();
+            } else if (isOnChange && showOrHide === 'hide') {      //                 allQsToShow = [
+                    ...triggerAndShowQsInPath, currentTrigger,
+                    ...(questionsData.filter(obj => (obj.triggerQuestion === currentTrigger && obj.showVals.includes(option.value)) ? [currentShowQIDsobj] : []))
+                ].flat();
+            } else if (!isOnChange && showOrHide === 'hide') {                allQsToShow = [
+                    // ...triggerAndShowQsInPath, currentTrigger
+                    questionsData.map(q => q.showAtStart && q.triggerQuestion)
+                ].flat();
+            }
+
+
+            return allQsToShow;
+
+        }
+
+
+
+        //  function that will take the array of qs to show, and hide all the others
+        const hideOrShowAppropriateQs = qsToShowIDs => {
+
+            allConditionals.forEach(q => { // hide all of the conditional qs
+                q.classList.add('hide-question');
+                q.classList.remove('show-question');
+            })
+
+            let domElementsToShow = []
+            // create array (domElementsToShow) of DOM elements associated with question ids
+            qsToShowIDs.forEach(questionID => {
+
+                // pushes "regular questions" to array
+                if (document.querySelector(
+                    '.survey-question-container:has([name$="' + questionID + '"])'
+                )) {
+                    domElementsToShow.push(document.querySelector(
+                        '.survey-question-container:has([name$="' + questionID + '"])'
+                    ))
+                }
+
+                // pushes "caption" questions to array
+                const captionQs = document.querySelectorAll('.form-content.survey-caption-container');
+                captionQs.forEach(cq => {
+                    if (cq.textContent.includes(`##${questionID}##`) || cq.classList.contains(`caption-${questionID}`)) {
+                        cq.classList.add(`caption-${questionID}`);
+                        cq.innerHTML = cq.innerHTML.replace(`##${questionID}##`, '');
+                        domElementsToShow.push(cq);
+                    }
+                });
+            })
+
+            // show the appropriate qs
+            domElementsToShow.forEach(q => {  //show each q})
+                // if (q.checked) {
+                q.classList.add('show-question');
+                q.classList.remove('hide-question');
+                // }
+            })
+
+        };
+
+
+        showTriggerOptions.forEach(option => {
+            if (option) {
+                option.checked = false
+            }
+        })
+
+
+        const setChangeListeners = (option, showOrHide) => {
+            if (option) {
+
+                const currentShowQIDs = showQuestionIDs;
+                option.addEventListener('change', function () {
+
+
+                    if (option.checked) {
+                        hideOrShowAppropriateQs(getQuestionsToShow(option, currentShowQIDs, triggerQuestionID, showOrHide, true));
+                    }
+                })
+                option.parentElement.addEventListener('change', function () {
+                    if (option.checked || option.parentElement.options && option.parentElement.options[option.parentElement.selectedIndex].classList.contains(`${showOrHide}-trigger-option`)) {
+                        hideOrShowAppropriateQs(getQuestionsToShow(option, currentShowQIDs, triggerQuestionID, showOrHide, true));
+                    }
+                })
+            }
+        }
+
+
+        // when show trigger is checked (radio) or selected (dropdown/combo box), show appropriate elements
+        showTriggerOptions.forEach(option => {
+            debugger
+            setChangeListeners(option, 'show')
+        });
+        hideTriggerOptions.forEach(option => {
+            setChangeListeners(option, 'hide')
+        });
+
+
+        // start by hiding all options
+
+        hideOrShowAppropriateQs(getQuestionsToShow('option', allConditionals, triggerQuestionID, 'show', false));
+
+
+    }
+
+
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // this data is set in the "Edit Ticket Information" page of an event
+        const _conditionallyShow = window.conditionallyShow || null;
+
+        if (_conditionallyShow) {
+
+            for (let i = 0; i < _conditionallyShow.length; i++) {
+
+                const _triggerQuestion = _conditionallyShow[i].triggerQuestion || null;
+                const _conditionalQuestions = _conditionallyShow[i].showThese || null;
+                const _hideVals = _conditionallyShow[i].hideVals || 'No';
+                const _showVals = _conditionallyShow[i].showVals || 'Yes';
+                const _showInitially = _conditionallyShow[i].showInitially || false;
+                const _showAtStart = _conditionallyShow[0].showAtStart;
+                const firstTriggerQ = _conditionallyShow[0].triggerQuestion;
+
+                if (_triggerQuestion && _conditionalQuestions) {
+                    showConditionals(_triggerQuestion, _conditionalQuestions, _hideVals, _showVals, _showInitially, i, firstTriggerQ, _showAtStart, _conditionallyShow);
+                }
+            }
+        }
+
+    });
+
+</script>
