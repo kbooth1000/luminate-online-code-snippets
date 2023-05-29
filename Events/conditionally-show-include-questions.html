@@ -4,7 +4,7 @@
 PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT, 
     (changing the ID numbers, etc. as needed):
     the variable conditionallyShow will be an array of objects, each object containing
-    properties: triggerQuestion, showVals, hideVals, conditionalQuestions, showInitially
+    properties: triggerQuestion, showVals, hideVals, showThese, showInitially
       
         <script>
     var conditionallyShow = [
@@ -28,7 +28,8 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
             triggerQuestion: '11064',
             showVals: 'No',
             hideVals: 'Yes',
-            conditionalQuestions: ['11071']
+            showThese: ['11071'],
+            showAtStart: true
         }
     ]
 
@@ -39,13 +40,9 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
 
     PUT THIS REUSABLE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT
     (S51:reus_conditional_event_questions)
-    
-
 
 ##### -->
 
-
-<!--    -->
 
 <style>
     /* STYLES FOR ADDITIONAL QUESTIONS */
@@ -139,7 +136,7 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
                 const captionQs = [...document.querySelectorAll('.form-content.survey-caption-container')];
                 captionQs.forEach(cq => {
                     if (cq.textContent.includes(`##${questionID}##`)) {
-
+                        
                         allConditionals.push(cq);
                     }
                 });
@@ -177,7 +174,6 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
                     questionsData.map(q => q.showAtStart && q.triggerQuestion)
                 ].flat();
             }
-
 
             return allQsToShow;
 
@@ -224,7 +220,6 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
                 q.classList.remove('hide-question');
                 // }
             })
-
         };
 
 
@@ -241,7 +236,6 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
                 const currentShowQIDs = showQuestionIDs;
                 option.addEventListener('change', function () {
 
-
                     if (option.checked) {
                         hideOrShowAppropriateQs(getQuestionsToShow(option, currentShowQIDs, triggerQuestionID, showOrHide, true));
                     }
@@ -257,7 +251,6 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
 
         // when show trigger is checked (radio) or selected (dropdown/combo box), show appropriate elements
         showTriggerOptions.forEach(option => {
-            debugger
             setChangeListeners(option, 'show')
         });
         hideTriggerOptions.forEach(option => {
