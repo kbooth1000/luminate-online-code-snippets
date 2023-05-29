@@ -158,18 +158,21 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
             }).filter(x => x !== undefined)
 
             let allQsToShow = [];
-            if (isOnChange && showOrHide === 'show') {      //                 allQsToShow = [
+            if (isOnChange && showOrHide === 'show') { 
+                allQsToShow = [
                     ...triggerAndShowQsInPath, currentTrigger, ...currentShowQIDs
                 ].flat();
-            } else if (!isOnChange && showOrHide === 'show') {                allQsToShow = [
-                    // ...triggerAndShowQsInPath, currentTrigger
+            } else if (!isOnChange && showOrHide === 'show') {    // ...triggerAndShowQsInPath, currentTrigger
+                allQsToShow = [
                     questionsData.map(q => q.showAtStart && q.triggerQuestion)
                 ].flat();
-            } else if (isOnChange && showOrHide === 'hide') {      //                 allQsToShow = [
+            } else if (isOnChange && showOrHide === 'hide') {
+                allQsToShow = [
                     ...triggerAndShowQsInPath, currentTrigger,
                     ...(questionsData.filter(obj => (obj.triggerQuestion === currentTrigger && obj.showVals.includes(option.value)) ? [currentShowQIDsobj] : []))
                 ].flat();
-            } else if (!isOnChange && showOrHide === 'hide') {                allQsToShow = [
+            } else if (!isOnChange && showOrHide === 'hide') {
+                allQsToShow = [
                     // ...triggerAndShowQsInPath, currentTrigger
                     questionsData.map(q => q.showAtStart && q.triggerQuestion)
                 ].flat();
