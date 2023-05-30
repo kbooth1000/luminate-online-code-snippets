@@ -4,8 +4,14 @@
 PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT, 
     (changing the ID numbers, etc. as needed):
     the variable conditionallyShow will be an array of objects, each object containing
-    properties: triggerQuestion, showVals, hideVals, showThese, showInitially
+    properties: triggerQuestion, showVals, hideVals, conditionalQuestions, showInitially
+
+    NOTE: when adding a "Caption" in the "Include Questions" step of the event admin, in 
+    type the question's ID number surrounded by two pound signs on both sides somewhere 
+    in the "Question Text";
+    for example: ##11203##<p>This is the content for the caption question with ID 11203</p>
       
+    FORMAT OF SCRIPT TO ADD TO "Edit Ticket Information" STEP
         <script>
     var conditionallyShow = [
         {
@@ -28,8 +34,7 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
             triggerQuestion: '11064',
             showVals: 'No',
             hideVals: 'Yes',
-            showThese: ['11071'],
-            showAtStart: true
+            conditionalQuestions: ['11071']
         }
     ]
 
@@ -40,9 +45,13 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
 
     PUT THIS REUSABLE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT
     (S51:reus_conditional_event_questions)
+    
+
 
 ##### -->
 
+
+<!--    -->
 
 <style>
     /* STYLES FOR ADDITIONAL QUESTIONS */
@@ -70,7 +79,6 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
         allTriggerQuestionIDs.push(triggerQuestionID);
 
 
-
         const allRegTriggerOptions = [...document.querySelectorAll(selector)].map(sel => {
             sel.classList.add('trigger-option');
             currentTriggerOptions.push(sel);
@@ -81,7 +89,6 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
             currentTriggerOptions.push(sel);
             return sel;
         })
-
 
 
         // array of dom element options in "showThese"s
@@ -113,8 +120,6 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
         })
 
 
-
-
         // create array of DOM elements from showQuestionIDs, allConditionals
         if (showQuestionIDs.length > 0 && triggerQuestionID) {
 
@@ -136,7 +141,7 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
                 const captionQs = [...document.querySelectorAll('.form-content.survey-caption-container')];
                 captionQs.forEach(cq => {
                     if (cq.textContent.includes(`##${questionID}##`)) {
-                        
+
                         allConditionals.push(cq);
                     }
                 });
@@ -155,11 +160,11 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
             }).filter(x => x !== undefined)
 
             let allQsToShow = [];
-            if (isOnChange && showOrHide === 'show') { 
+            if (isOnChange && showOrHide === 'show') {
                 allQsToShow = [
                     ...triggerAndShowQsInPath, currentTrigger, ...currentShowQIDs
                 ].flat();
-            } else if (!isOnChange && showOrHide === 'show') {    // ...triggerAndShowQsInPath, currentTrigger
+            } else if (!isOnChange && showOrHide === 'show') {
                 allQsToShow = [
                     questionsData.map(q => q.showAtStart && q.triggerQuestion)
                 ].flat();
@@ -175,10 +180,10 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
                 ].flat();
             }
 
+
             return allQsToShow;
 
         }
-
 
 
         //  function that will take the array of qs to show, and hide all the others
@@ -251,6 +256,7 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
 
         // when show trigger is checked (radio) or selected (dropdown/combo box), show appropriate elements
         showTriggerOptions.forEach(option => {
+            
             setChangeListeners(option, 'show')
         });
         hideTriggerOptions.forEach(option => {
@@ -259,13 +265,9 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
 
 
         // start by hiding all options
-
         hideOrShowAppropriateQs(getQuestionsToShow('option', allConditionals, triggerQuestionID, 'show', false));
 
-
     }
-
-
 
 
 
