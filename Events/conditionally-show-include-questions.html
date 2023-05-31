@@ -5,13 +5,15 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
     (changing the ID numbers, etc. as needed):
     the variable conditionallyShow will be an array of objects, each object containing
     properties: triggerQuestion, showVals, hideVals, conditionalQuestions, showInitially
-
+    
     NOTE: when adding a "Caption" in the "Include Questions" step of the event admin, in 
     type the question's ID number surrounded by two pound signs on both sides somewhere 
     in the "Question Text";
     for example: ##11203##<p>This is the content for the caption question with ID 11203</p>
+
+    NOTE 2: When adding values to the showVals or hideVals properties, any apostrophes or 
+    quotation marks must be preceded by a backslash "\", for example hideVals: ['I don\'t know']
       
-    FORMAT OF SCRIPT TO ADD TO "Edit Ticket Information" STEP
         <script>
     var conditionallyShow = [
         {
@@ -79,18 +81,6 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
         allTriggerQuestionIDs.push(triggerQuestionID);
 
 
-        const allRegTriggerOptions = [...document.querySelectorAll(selector)].map(sel => {
-            sel.classList.add('trigger-option');
-            currentTriggerOptions.push(sel);
-            return sel;
-        });
-        const allDropdownTriggerOptions = [...document.querySelectorAll('option')].map(sel => {
-            sel.classList.add('trigger-option');
-            currentTriggerOptions.push(sel);
-            return sel;
-        })
-
-
         // array of dom element options in "showThese"s
         const showTriggerOptions = showVals.map(val => {
             const showValRadio = document.querySelector(selector + '[value="' + val + '"]');
@@ -118,6 +108,8 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
                 return hideValDropdown;
             }
         })
+
+
 
 
         // create array of DOM elements from showQuestionIDs, allConditionals
@@ -186,6 +178,7 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
         }
 
 
+
         //  function that will take the array of qs to show, and hide all the others
         const hideOrShowAppropriateQs = qsToShowIDs => {
 
@@ -225,6 +218,7 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
                 q.classList.remove('hide-question');
                 // }
             })
+
         };
 
 
@@ -240,6 +234,7 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
 
                 const currentShowQIDs = showQuestionIDs;
                 option.addEventListener('change', function () {
+
 
                     if (option.checked) {
                         hideOrShowAppropriateQs(getQuestionsToShow(option, currentShowQIDs, triggerQuestionID, showOrHide, true));
@@ -265,7 +260,9 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
 
 
         // start by hiding all options
+
         hideOrShowAppropriateQs(getQuestionsToShow('option', allConditionals, triggerQuestionID, 'show', false));
+
 
     }
 
