@@ -26,6 +26,7 @@
 
 
   <div class="pay-with-card-box">
+    <!-- THIS CREATES A LINK TO THE DONATION FORM ASSOCIATED WITH THIS ONE-CLICK FORM -->
     <a href="https://[[S29:SECURE_DOMAIN]][[S29:PATH]]Donation2?df_id=[[E130:[[S8]] dup dup length swap " oneclick_"
       indexof 9 + swap substring dup "." indexof dup 0 < 1000 0 ? + 0 swap substring]]&[[E130:[[S8]] dup dup length
       swap "oneclick_" indexof 9 + swap substring dup "." indexof dup 0 < 1000 0 ? + 0 swap
@@ -36,5 +37,6 @@
   <p>&nbsp;</p>
 </div>
 
+<!-- THIS PULLS IN THE BB CHECKOUT DONATION FORM USING S1300 WITH THE ID # EXTRACTED FROM THE URL (S8 TAG) USING REVERSE POLISH NOTATION (S130 TAG) -->
 [[E1300:[[E130:[[S8]] dup dup length swap "oneclick_" indexof 9 + swap substring dup "." indexof dup 0 < 1000 0 ? + 0
   swap substring]]]] </div>
