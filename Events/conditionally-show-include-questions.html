@@ -3,7 +3,7 @@
 <!-- INSTRUCTIONS:
 PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT, 
     (changing the ID numbers, etc. as needed):
-    the variable conditionallyShow will be an array of objects, each object containing
+    the variable questionsData will be an array of objects, each object containing
     properties: triggerQuestion, showVals, hideVals, conditionalQuestions, showInitially
     
     NOTE: when adding a "Caption" in the "Include Questions" step of the event admin, in 
@@ -15,7 +15,7 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
     quotation marks must be preceded by a backslash "\", for example hideVals: ['I don\'t know']
       
         <script>
-    var conditionallyShow = [
+    var questionsData = [
         {
             triggerQuestion: [ the id number of the question that the
                                user will choose that will
@@ -72,13 +72,10 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
 <script>  /* CODE TO HIDE/SHOW COMPANY QUESTIONS */
 
     let allConditionals = [];
-    let allTriggerQuestionIDs = [];
 
     const showConditionals = function showConditionals(triggerQuestionID, showQuestionIDs, hideVals, showVals, showInitially, index, firstTriggerQ, showAtStart, questionsData) {
 
         const selector = '[name$="' + triggerQuestionID + '"]';
-        let currentTriggerOptions = [];
-        allTriggerQuestionIDs.push(triggerQuestionID);
 
 
         // array of dom element options in "showThese"s
@@ -273,22 +270,22 @@ PUT THE FOLLOWING CODE INTO THE "EDIT TICKET INFORMATION" SECTION OF AN EVENT,
     document.addEventListener('DOMContentLoaded', function () {
 
         // this data is set in the "Edit Ticket Information" page of an event
-        const _conditionallyShow = window.conditionallyShow || null;
+        const _questionsData = window.questionsData || null;
 
-        if (_conditionallyShow) {
+        if (_questionsData) {
 
-            for (let i = 0; i < _conditionallyShow.length; i++) {
+            for (let i = 0; i < _questionsData.length; i++) {
 
-                const _triggerQuestion = _conditionallyShow[i].triggerQuestion || null;
-                const _conditionalQuestions = _conditionallyShow[i].showThese || null;
-                const _hideVals = _conditionallyShow[i].hideVals || 'No';
-                const _showVals = _conditionallyShow[i].showVals || 'Yes';
-                const _showInitially = _conditionallyShow[i].showInitially || false;
-                const _showAtStart = _conditionallyShow[0].showAtStart;
-                const firstTriggerQ = _conditionallyShow[0].triggerQuestion;
+                const _triggerQuestion = _questionsData[i].triggerQuestion || null;
+                const _conditionalQuestions = _questionsData[i].showThese || null;
+                const _hideVals = _questionsData[i].hideVals || 'No';
+                const _showVals = _questionsData[i].showVals || 'Yes';
+                const _showInitially = _questionsData[i].showInitially || false;
+                const _showAtStart = _questionsData[0].showAtStart;
+                const firstTriggerQ = _questionsData[0].triggerQuestion;
 
                 if (_triggerQuestion && _conditionalQuestions) {
-                    showConditionals(_triggerQuestion, _conditionalQuestions, _hideVals, _showVals, _showInitially, i, firstTriggerQ, _showAtStart, _conditionallyShow);
+                    showConditionals(_triggerQuestion, _conditionalQuestions, _hideVals, _showVals, _showInitially, i, firstTriggerQ, _showAtStart, _questionsData);
                 }
             }
         }
