@@ -1,0 +1,67 @@
+<style>
+    .ticket-level-details-row .ticket-details-cell {
+        border: 1px #ddd solid;
+    }
+
+    .ticket-details-box {}
+
+    .ticket-level-details-row .ticket-details-cell .ticket-details-box {
+        overflow: hidden;
+        height: 0;
+        padding: 0 3rem;
+        border-bottom: none;
+        background: hsl(203 25% 97% / 1);
+        font-size: 0.9em;
+        transition: 0.4s;
+    }
+
+    .ticket-level-details-row.show-deets .ticket-details-cell .ticket-details-box {
+        height: 100%;
+        width: 100%;
+        border-bottom: 1rem #eee solid;
+        padding: 0.5rem 3rem 2rem;
+    }
+
+    .ticket-tax-info {
+        font-style: italic;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const uiDialogs = document.querySelectorAll('.ticket-class-details');
+        const ticketLevelRows = document.querySelectorAll('tr[class^="lc_Row"]:not(.lc_Row_no_border)');
+        const ticketDetailsLinks = document.querySelectorAll('[id^="ticket-class-details-link-"]');
+
+        let benefitsList = [...uiDialogs].map((ticket) => {
+            const ticketRow = document.createElement('tr');
+            ticketRow.classList.add('ticket-level-details-row');
+            ticketRow.innerHTML = `
+            <tr class="ticket-level-details-row">
+                <td colspan="4" class="ticket-details-cell">
+                    <div class="ticket-details-box">
+                        <p class="ticket-description">${ticket.children[0].innerHTML}</p>
+                        <p class="ticket-tax-info">${ticket.children[1].innerText}</p>
+                    </div>
+                </td>
+            </tr>
+            `
+            return ticketRow;
+        })
+
+        ticketLevelRows.forEach((level, i) => {
+            level.after(benefitsList[i]);
+        })
+
+        ticketDetailsLinks.forEach((link) => {
+            link.id = link.id + '_info_expander'
+            link.addEventListener('click', function (e) {
+                console.log('CLICK')
+                e.preventDefault();
+                link.closest('tr').nextElementSibling.classList.toggle('show-deets');
+            })
+        })
+
+    })
+</script>
