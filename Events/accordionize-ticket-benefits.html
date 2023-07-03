@@ -39,13 +39,20 @@
         const uiDialogs = document.querySelectorAll('.ticket-class-details');
         const ticketLevelRows = document.querySelectorAll('tr[class^="lc_Row"]:not(.lc_Row_no_border)');
         const ticketDetailsLinks = document.querySelectorAll('[id^="ticket-class-details-link-"]');
+        const tableRow = document.querySelectorAll('.lc_Row1')[0];
+        let colSpan;
+        if (tableRow) {
+            colSpan = tableRow.querySelectorAll('td').length;
+        } else colSpan = 4;
 
-        let benefitsList = [...uiDialogs].map((ticket) => {
-            const ticketRow = document.createElement('tr');
-            ticketRow.classList.add('ticket-level-details-row');
-            ticketRow.innerHTML = `
+
+        if (uiDialogs && ticketLevelRows && ticketDetailsLinks) {
+            let benefitsList = [...uiDialogs].map((ticket) => {
+                const ticketRow = document.createElement('tr');
+                ticketRow.classList.add('ticket-level-details-row');
+                ticketRow.innerHTML = `
             <tr class="ticket-level-details-row">
-                <td colspan="4" class="ticket-details-cell">
+                <td colspan="${colSpan}" class="ticket-details-cell">
                     <div class="ticket-details-box">
                         <p class="ticket-description">${ticket.children[0].innerHTML}</p>
                         <p class="ticket-tax-info">${ticket.children[1].innerText}</p>
@@ -53,21 +60,21 @@
                 </td>
             </tr>
             `
-            return ticketRow;
-        })
-
-        ticketLevelRows.forEach((level, i) => {
-            level.after(benefitsList[i]);
-        })
-
-        ticketDetailsLinks.forEach((link) => {
-            link.id = link.id + '_info_expander'
-            link.addEventListener('click', function (e) {
-                console.log('CLICK')
-                e.preventDefault();
-                link.closest('tr').nextElementSibling.classList.toggle('show-deets');
+                return ticketRow;
             })
-        })
 
+            ticketLevelRows.forEach((level, i) => {
+                level.after(benefitsList[i]);
+            })
+
+            ticketDetailsLinks.forEach((link) => {
+                link.id = link.id + '_info_expander'
+                link.addEventListener('click', function (e) {
+                    console.log('CLICK')
+                    e.preventDefault();
+                    link.closest('tr').nextElementSibling.classList.toggle('show-deets');
+                })
+            })
+        }
     })
 </script>
